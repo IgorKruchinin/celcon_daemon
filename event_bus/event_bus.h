@@ -3,7 +3,7 @@
 #include <list>
 #include <functional>
 
-#include "event.h"
+#include "../events/event.h"
 
 using Handler = std::function<void(Event)>;
 
