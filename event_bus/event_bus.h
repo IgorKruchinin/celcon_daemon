@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include <list>
+#include <vector>
 #include <functional>
 
 #include "../events/event.h"
@@ -8,8 +8,8 @@
 using Handler = std::function<void(Event)>;
 
 class Event_bus {
-    std::map<Event, std::list<Handler>> event_handlers_;
+    std::map<std::string, std::vector<Handler>> event_handlers_;
 public:
-    void subscribe(const Event &event, Handler handler);
+    void subscribe(const std::string &event_type, Handler handler);
     void publish(const Event &event);
 };
