@@ -2,8 +2,8 @@
 #include <string>
 #include <mutex>
 
-Base_worker::Base_worker(const std::string &id, Logger &logger)
-: worker_id_(std::move(id)), logger_(logger) {}
+Base_worker::Base_worker(const std::string &id, Config &config, Logger &logger)
+: worker_id_(std::move(id)), config_(config), logger_(logger) {}
 
 const std::string &get_id() const {
     return worker_id_;
@@ -53,6 +53,16 @@ void Base_worker::stop() {
 
 bool Base_worker::is_running() const {
     return state_.load() == Worker_state::RUNNING;
+}
+
+bool Base_worker::wait_if_paused() {
+    std::unique_lock<std::mutex> lock(pause_mutex_);
+    pause_cv_.wait(lock, [this] {
+        Worker_state s = state_.load();
+        return s != Worker_state::PAUSED;
+    });
+    Worker_state s = state_.load();
+    return (s == Worker_state::RUNNING);
 }
 
 virtual ~Base_worker::Base_worker() {

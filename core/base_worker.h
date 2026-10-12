@@ -17,12 +17,13 @@ protected:
     std::mutex pause_mutex_;
     std::condition_variable pause_cv_;
     Logger &logger_;
+    Config &config_;
     virtual void on_start() {};
     virtual void on_pause() {};
     virtual void on_resume() {};
     virtual void on_stop() {};
 public:
-    Base_worker(const std::string &id, Logger &logger);
+    Base_worker(const std::string &id, Config &config, Logger &logger);
     const std::string &get_id() const;
     const Worker_state &get_state() const;
     void start();
@@ -30,5 +31,6 @@ public:
     void resume();
     void stop();
     bool is_running() const;
+    bool wait_if_paused();
     virtual ~Base_worker();
 };

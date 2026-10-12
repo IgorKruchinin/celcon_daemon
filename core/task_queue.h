@@ -2,7 +2,6 @@
 
 struct Task {
     std::string type;
-    std::any data;
 }
 
 class Task_queue {

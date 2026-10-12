@@ -7,6 +7,7 @@
 class JSON_protocol {
 public:
     static inline const std::string &gen_auth_response_success(Authenticated_user user);
+    static inline const std::string &gen_get_user_response_success();
     static inline const std::string &gen_error_unauthorized();
     static inline const std::string &gen_error_forbidden();
 

@@ -5,16 +5,17 @@
 class Config {
     std::unordered_map<std::string, std::string> config_parsed_;
     std::string config_path_ = "/etc/celcon.conf";
-    static std::unordered_map<std::string, std::string> default_config_ = {
+    static const std::unordered_map<std::string, std::string> default_config_ = {
         {"checksum_threads", "4"},
-        {"connection_port", "1234"}, // Уточнить порт демона
+        {"connection_port", "9999"}, // Уточнить порт демона
         {"debugging_events", "false"},
         {"log_sql_queries", "false"},
         {"dbms", "mysql"},
         {"syslog_logging", "true"},
         {"database_logging", "true"},
         {"file_logging", "true"},
-        {"log_path", "/var/log/celcon.log"}
+        {"log_path", "/var/log/celcon.log"},
+        {"watching_method", "inotify"}
     };
 public:
     Config(const std::string &config_path);
