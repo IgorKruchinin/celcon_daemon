@@ -5,7 +5,7 @@
 
 #include "../events/event.h"
 
-using Handler = std::function<void(Event)>;
+using Handler = std::function<void(const Event &)>;
 
 class Event_bus {
     std::map<std::string, std::vector<Handler>> event_handlers_;

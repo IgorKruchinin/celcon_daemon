@@ -12,4 +12,10 @@ protected:
 
         }
     }
+    void handle_add_file_event(const Event &event) {
+
+    }
+    const Event &emiss_pending_event() {
+
+    }
 };
