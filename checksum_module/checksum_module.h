@@ -39,9 +39,14 @@ private:
             if (check_task.file_info.algorithm == Checksum_algorithm::SHA256) {
                 real_hash = hash_file_evp(check_task->file_info.path, EVP_sha256());
             } else if (check_task->file_info.algorithm == Checksum_algorithm::SHA1) {
-                real_hash = hash_file_evp(check_task.file_info.path, EVP_sha1());
+                real_hash = hash_file_evp(check_task->file_info.path, EVP_sha1());
             } else if (check_task->file_info.algorithm == Checksum_algorithm::MD5) {
-                real_hash = hash_file_evp(check_task.file_info.path, EVP_md5());
+                real_hash = hash_file_evp(check_task->file_info.path, EVP_md5());
+            }
+            if (real_hash == check_task->file_info.reference_hash) {
+                checksum_matching(check_task->file_info);
+            } else {
+                checksum_unmatching(check_task->file_info);
             }
         } else {
             logger_.send_log("Checksum_module: incorret task got for processing: " + task.type, Log_level::Warning);
@@ -64,6 +69,16 @@ private:
             Check_file_task check_task;
             check_task.type = "check.file";
             check_task.file_info = check_event->get_file_info();
+            Event_bus_worker::publish_event(Event("file.checking.pending"));
+        } else {
+            logger_.send_log("Checksum_module: incorrect event attempted for handle: " + event.type, Log_level::Warning);
+        }
+    }
+    void handle_check_file_first(const Event &event) {
+        if (event.get_type() == "file.checking.add" && auto &check_event = dynamic_cast<const Check_file_event>(&event)) {
+            Check_file_task check_task;
+            check_task.type = "check.file";
+            check_task.file_info = check_event->get_file_info(); // ЗАПИСАТЬ В БАЗУ ДАННЫХ ЭТАЛОННЫЙ ХЭШ!!!!!!!!!!
             Event_bus_worker::publish_event(Event("file.checking.pending"));
         } else {
             logger_.send_log("Checksum_module: incorrect event attempted for handle: " + event.type, Log_level::Warning);
