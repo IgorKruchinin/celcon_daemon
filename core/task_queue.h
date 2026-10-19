@@ -1,8 +1,5 @@
 #pragma once
-
-struct Task {
-    std::string type;
-}
+#include "../dto/task.h"
 
 class Task_queue {
     std::queue<Task> queue_;
@@ -10,7 +7,7 @@ class Task_queue {
     std::condition_variable cv_;
     bool stopped_ = false;
 public:
-    void push(Task &task) {
+    void push(const Task &task) {
         {
             std::lock_guard<std::mutex> lock(mutex_);
             if (stopped_) return;
@@ -19,7 +16,7 @@ public:
         cv_notify_one();
     }
 
-    bool pop(Task &task) {
+    bool pop(const Task &task) {
         std::unique_lock<std::mutex> lock(mutex_);
         cv_.wait(lock, [this] {return !queue_.empty() || stopped_; });
         if (stopped_ && queue_.empty()) {

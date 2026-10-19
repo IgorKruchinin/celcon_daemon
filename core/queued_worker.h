@@ -43,6 +43,9 @@ public:
     size_t get_queue_size() {
         return task_queue_.size();
     }
+    void add_task(const Task &task) {
+        task_queue_.push(task);
+    }
 protected:
     virtual void process_task(const Task &task) = 0;
 private:
