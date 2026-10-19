@@ -37,21 +37,21 @@ private:
         if (task.type == "check.file" && auto &check_task = dynamic_cast<const Check_file_task>(&task)) {
             std::string real_hash;
             if (check_task.file_info.algorithm == Checksum_algorithm::SHA256) {
-                real_hash = hash_file_evp(check_task.file_info.path, EVP_sha256());
-            } else if (check_task.file_info.algorithm == Checksum_algorithm::SHA1) {
+                real_hash = hash_file_evp(check_task->file_info.path, EVP_sha256());
+            } else if (check_task->file_info.algorithm == Checksum_algorithm::SHA1) {
                 real_hash = hash_file_evp(check_task.file_info.path, EVP_sha1());
-            } else if (check_task.file_info.algorithm == Checksum_algorithm::MD5) {
+            } else if (check_task->file_info.algorithm == Checksum_algorithm::MD5) {
                 real_hash = hash_file_evp(check_task.file_info.path, EVP_md5());
             }
         } else {
-            logger_.send_log("Checksum_module: incorret task got for processing: " + task.type, Logger_info::Warning);
+            logger_.send_log("Checksum_module: incorret task got for processing: " + task.type, Log_level::Warning);
         }
     }
     void checksum_matching(const File_info &file) {
-        Event_bus_worker::publish_event("file.checksum.matching");
+        Event_bus_worker::publish_event(Event("file.checksum.matching"));
     }
     void checksum_unmatching(const File_info &file) {
-        Event_bus_worker::publish_event("file.checksum.unmatching");
+        Event_bus_worker::publish_event(Event("file.checksum.unmatching"));
     }
     void add_checking_file(const File_info &file) {
         Check_file_task check_task;
@@ -60,11 +60,23 @@ private:
         Queued_worker::add_task(check_task);
     }
     void handle_add_file_event(const Event &event) {
-        if (event.get_type() == "file.checking.add") {
-
+        if (event.get_type() == "file.checking.add" && auto &check_event = dynamic_cast<const Check_file_event>(&event)) {
+            Check_file_task check_task;
+            check_task.type = "check.file";
+            check_task.file_info = check_event->get_file_info();
+            Event_bus_worker::publish_event(Event("file.checking.pending"));
+        } else {
+            logger_.send_log("Checksum_module: incorrect event attempted for handle: " + event.type, Log_level::Warning);
         }
     }
 public:
     Checksum_module(const std::string &worker_id, int pool_size, Config &config, Logger &logger, Event_bus event_bus)
-    : Event_bus_worker(worker_id, pool_size, config, logger, event_bus) {}
+    : Event_bus_worker(worker_id, pool_size, config, logger, event_bus) {
+        init_events();
+    }
+    void init_events() {
+        Event_bus_worker::subscribe_to_event("file.checking.add", [this](const Event &event) {
+            handle_add_file_event(const Event &event);
+        });
+    }
 };

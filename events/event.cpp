@@ -15,3 +15,10 @@ const std::any &Event::get_data() {
 const std::chrono::sys_seconds &Event::get_timestamp() {
     return timestamp_;
 }
+
+Check_file_event::Check_file_event(const File_info &file)
+    : Event("file.checking.add"), file_info_(file) {}
+
+const File_info &Check_file_event::get_file_info() {
+    return file_info_;
+}
