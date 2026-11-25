@@ -10,5 +10,7 @@ public:
     static inline const std::string &gen_get_user_response_success();
     static inline const std::string &gen_error_unauthorized();
     static inline const std::string &gen_error_forbidden();
+    static inline const std::string &gen_get_files_response_success();
+
 
 };

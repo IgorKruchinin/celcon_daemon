@@ -53,7 +53,7 @@ private:
         }
     }
     void checksum_matching(const File_info &file) {
-        Event_bus_worker::publish_event(Event("file.checksum.matching"));
+        Event_bus_worker::publish_event(Event("file.checksum.matching")); // расширить с информацией о проверенном файле
     }
     void checksum_unmatching(const File_info &file) {
         Event_bus_worker::publish_event(Event("file.checksum.unmatching"));

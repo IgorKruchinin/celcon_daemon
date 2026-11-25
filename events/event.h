@@ -19,3 +19,10 @@ public:
     Check_file_event(const File_info &file);
     const File_info &get_file_info();
 };
+
+class Watching_file_event : public Event {
+    std::string file_path_;
+public:
+    Watching_file_event(const std::string &path);
+    const std::string &get_file_path();
+};
